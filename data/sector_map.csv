@@ -1,0 +1,166 @@
+sector,agg_sector
+Corn,AGR
+FiberCrop,AGR
+Fruits,AGR
+Legumes,AGR
+MiscCrop,AGR
+N fertilizer,AGR
+NutsSeeds,AGR
+OilCrop,AGR
+OilPalm,AGR
+OtherGrain,AGR
+Rice,AGR
+RootTuber,AGR
+Soybean,AGR
+SugarCrop,AGR
+UnmanagedLand,UNM
+Vegetables,AGR
+Wheat,AGR
+agricultural energy use,AGR
+comm heating,COM
+comm others,COM
+construction energy use,IND
+electricity,EN
+mining energy use,IND
+other industrial energy use,IND
+process heat cement,IND
+resid heating TradBio_d1,RESID
+resid heating TradBio_d10,RESID
+resid heating TradBio_d2,RESID
+resid heating TradBio_d3,RESID
+resid heating TradBio_d4,RESID
+resid heating TradBio_d5,RESID
+resid heating TradBio_d6,RESID
+resid heating TradBio_d7,RESID
+resid heating TradBio_d8,RESID
+resid heating TradBio_d9,RESID
+resid heating modern_d1,RESID
+resid heating modern_d10,RESID
+resid heating modern_d2,RESID
+resid heating modern_d3,RESID
+resid heating modern_d4,RESID
+resid heating modern_d5,RESID
+resid heating modern_d6,RESID
+resid heating modern_d7,RESID
+resid heating modern_d8,RESID
+resid heating modern_d9,RESID
+resid others TradBio_d1,RESID
+resid others TradBio_d10,RESID
+resid others TradBio_d2,RESID
+resid others TradBio_d3,RESID
+resid others TradBio_d4,RESID
+resid others TradBio_d5,RESID
+resid others TradBio_d6,RESID
+resid others TradBio_d7,RESID
+resid others TradBio_d8,RESID
+resid others TradBio_d9,RESID
+resid others coal_d1,RESID
+resid others coal_d10,RESID
+resid others coal_d2,RESID
+resid others coal_d3,RESID
+resid others coal_d4,RESID
+resid others coal_d5,RESID
+resid others coal_d6,RESID
+resid others coal_d7,RESID
+resid others coal_d8,RESID
+resid others coal_d9,RESID
+resid others modern_d1,RESID
+resid others modern_d10,RESID
+resid others modern_d2,RESID
+resid others modern_d3,RESID
+resid others modern_d4,RESID
+resid others modern_d5,RESID
+resid others modern_d6,RESID
+resid others modern_d7,RESID
+resid others modern_d8,RESID
+resid others modern_d9,RESID
+trn_aviation_intl_d1,TRN
+trn_aviation_intl_d10,TRN
+trn_aviation_intl_d2,TRN
+trn_aviation_intl_d3,TRN
+trn_aviation_intl_d4,TRN
+trn_aviation_intl_d5,TRN
+trn_aviation_intl_d6,TRN
+trn_aviation_intl_d7,TRN
+trn_aviation_intl_d8,TRN
+trn_aviation_intl_d9,TRN
+trn_freight,TRN
+trn_freight_road,TRN
+trn_pass_d1,TRN
+trn_pass_d10,TRN
+trn_pass_d2,TRN
+trn_pass_d3,TRN
+trn_pass_d4,TRN
+trn_pass_d5,TRN
+trn_pass_d6,TRN
+trn_pass_d7,TRN
+trn_pass_d8,TRN
+trn_pass_d9,TRN
+trn_pass_road_LDV_4W_d1,TRN
+trn_pass_road_LDV_4W_d10,TRN
+trn_pass_road_LDV_4W_d2,TRN
+trn_pass_road_LDV_4W_d3,TRN
+trn_pass_road_LDV_4W_d4,TRN
+trn_pass_road_LDV_4W_d5,TRN
+trn_pass_road_LDV_4W_d6,TRN
+trn_pass_road_LDV_4W_d7,TRN
+trn_pass_road_LDV_4W_d8,TRN
+trn_pass_road_LDV_4W_d9,TRN
+trn_pass_road_LDV_d1,TRN
+trn_pass_road_LDV_d10,TRN
+trn_pass_road_LDV_d2,TRN
+trn_pass_road_LDV_d3,TRN
+trn_pass_road_LDV_d4,TRN
+trn_pass_road_LDV_d5,TRN
+trn_pass_road_LDV_d6,TRN
+trn_pass_road_LDV_d7,TRN
+trn_pass_road_LDV_d8,TRN
+trn_pass_road_LDV_d9,TRN
+trn_pass_road_d1,TRN
+trn_pass_road_d10,TRN
+trn_pass_road_d2,TRN
+trn_pass_road_d3,TRN
+trn_pass_road_d4,TRN
+trn_pass_road_d5,TRN
+trn_pass_road_d6,TRN
+trn_pass_road_d7,TRN
+trn_pass_road_d8,TRN
+trn_pass_road_d9,TRN
+trn_shipping_intl,TRN
+urban processes,URB
+H2 central production,EN
+H2 wholesale dispensing,EN
+industrial processes,IND
+refining,EN
+Beef,AN
+Dairy,AN
+FodderGrass,AGR
+FodderHerb,AGR
+Pork,AN
+Poultry,AN
+SheepGoat,AN
+alumina,IND
+chemical energy use,IND
+iron and steel,IND
+comm cooling,COM
+resid heating coal_d1,RESID
+resid heating coal_d10,RESID
+resid heating coal_d2,RESID
+resid heating coal_d3,RESID
+resid heating coal_d4,RESID
+resid heating coal_d5,RESID
+resid heating coal_d6,RESID
+resid heating coal_d7,RESID
+resid heating coal_d8,RESID
+resid heating coal_d9,RESID
+district heat,EN
+resid cooling modern_d1,RESID
+resid cooling modern_d10,RESID
+resid cooling modern_d2,RESID
+resid cooling modern_d3,RESID
+resid cooling modern_d4,RESID
+resid cooling modern_d5,RESID
+resid cooling modern_d6,RESID
+resid cooling modern_d7,RESID
+resid cooling modern_d8,RESID
+resid cooling modern_d9,RESID

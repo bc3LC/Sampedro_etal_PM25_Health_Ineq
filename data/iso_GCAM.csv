@@ -1,0 +1,244 @@
+iso,GCAM_region_ID,gcam_region
+abw,9,Central America and Caribbean
+afg,27,South Asia
+ago,4,Africa_Southern
+aia,9,Central America and Caribbean
+alb,15,Europe_Non_EU
+and,13,EU-15
+ant,9,Central America and Caribbean
+are,21,Middle East
+arg,31,Argentina
+arm,10,Central Asia
+asm,29,Southeast Asia
+atg,9,Central America and Caribbean
+aus,6,Australia_NZ
+aut,13,EU-15
+aze,10,Central Asia
+bdi,2,Africa_Eastern
+bel,13,EU-15
+ben,5,Africa_Western
+bfa,5,Africa_Western
+bgd,27,South Asia
+bgr,12,EU-12
+bhr,21,Middle East
+bhs,9,Central America and Caribbean
+bih,15,Europe_Non_EU
+blr,14,Europe_Eastern
+blz,9,Central America and Caribbean
+bmu,9,Central America and Caribbean
+bol,26,South America_Southern
+bra,7,Brazil
+brb,9,Central America and Caribbean
+brn,29,Southeast Asia
+btn,27,South Asia
+bwa,4,Africa_Southern
+caf,5,Africa_Western
+can,8,Canada
+cck,29,Southeast Asia
+che,16,European Free Trade Association
+chi,13,EU-15
+chl,26,South America_Southern
+chn,11,China
+civ,5,Africa_Western
+cmr,5,Africa_Western
+cod,5,Africa_Western
+cog,5,Africa_Western
+cok,29,Southeast Asia
+col,32,Colombia
+com,2,Africa_Eastern
+cpv,5,Africa_Western
+cri,9,Central America and Caribbean
+cub,9,Central America and Caribbean
+cuw,9,Central America and Caribbean
+cym,9,Central America and Caribbean
+cyp,12,EU-12
+cxr,29,Southeast Asia
+cze,12,EU-12
+deu,13,EU-15
+dji,2,Africa_Eastern
+dma,9,Central America and Caribbean
+dnk,13,EU-15
+dom,9,Central America and Caribbean
+dza,3,Africa_Northern
+ecu,26,South America_Southern
+egy,3,Africa_Northern
+eri,2,Africa_Eastern
+esh,3,Africa_Northern
+esp,13,EU-15
+est,12,EU-12
+eth,2,Africa_Eastern
+fin,13,EU-15
+fji,29,Southeast Asia
+flk,13,EU-15
+fra,13,EU-15
+fro,13,EU-15
+fsm,29,Southeast Asia
+gab,5,Africa_Western
+gbr,13,EU-15
+geo,10,Central Asia
+ggy,13,EU-15
+gha,5,Africa_Western
+gib,13,EU-15
+gin,5,Africa_Western
+glp,9,Central America and Caribbean
+gmb,5,Africa_Western
+gnb,5,Africa_Western
+gnq,5,Africa_Western
+grc,13,EU-15
+grd,9,Central America and Caribbean
+grl,13,EU-15
+gtm,9,Central America and Caribbean
+guf,25,South America_Northern
+gum,29,Southeast Asia
+guy,25,South America_Northern
+hkg,11,China
+hnd,9,Central America and Caribbean
+hrv,15,Europe_Non_EU
+hti,9,Central America and Caribbean
+hun,12,EU-12
+idn,18,Indonesia
+imn,13,EU-15
+ind,17,India
+irl,13,EU-15
+irn,21,Middle East
+irq,21,Middle East
+isl,16,European Free Trade Association
+isr,21,Middle East
+ita,13,EU-15
+jam,9,Central America and Caribbean
+jey,13,EU-15
+jor,21,Middle East
+jpn,19,Japan
+kaz,10,Central Asia
+ken,2,Africa_Eastern
+kgz,10,Central Asia
+khm,29,Southeast Asia
+kir,29,Southeast Asia
+kna,9,Central America and Caribbean
+kor,28,South Korea
+kwt,21,Middle East
+lao,29,Southeast Asia
+lbn,21,Middle East
+lbr,5,Africa_Western
+lby,3,Africa_Northern
+lca,9,Central America and Caribbean
+lie,16,European Free Trade Association
+lka,27,South Asia
+lso,4,Africa_Southern
+ltu,12,EU-12
+lux,13,EU-15
+lva,12,EU-12
+mac,11,China
+mar,3,Africa_Northern
+mco,13,EU-15
+mda,14,Europe_Eastern
+mdg,2,Africa_Eastern
+mdv,27,South Asia
+mex,20,Mexico
+mhl,29,Southeast Asia
+mkd,15,Europe_Non_EU
+mli,5,Africa_Western
+mlt,12,EU-12
+mmr,29,Southeast Asia
+mne,15,Europe_Non_EU
+mng,10,Central Asia
+mnp,29,Southeast Asia
+moz,4,Africa_Southern
+mrt,5,Africa_Western
+msr,9,Central America and Caribbean
+mtq,9,Central America and Caribbean
+mus,2,Africa_Eastern
+mwi,4,Africa_Southern
+mys,29,Southeast Asia
+myt,29,Southeast Asia
+nam,4,Africa_Southern
+ncl,29,Southeast Asia
+ner,5,Africa_Western
+nfk,29,Southeast Asia
+nga,5,Africa_Western
+nic,9,Central America and Caribbean
+niu,29,Southeast Asia
+nld,13,EU-15
+nor,16,European Free Trade Association
+npl,27,South Asia
+nru,29,Southeast Asia
+nzl,6,Australia_NZ
+omn,21,Middle East
+pak,22,Pakistan
+pan,9,Central America and Caribbean
+pci,29,Southeast Asia
+pcn,29,Southeast Asia
+per,26,South America_Southern
+phl,29,Southeast Asia
+plw,29,Southeast Asia
+png,29,Southeast Asia
+pol,12,EU-12
+pri,1,USA
+prk,29,Southeast Asia
+prt,13,EU-15
+pry,26,South America_Southern
+pse,21,Middle East
+pyf,29,Southeast Asia
+qat,21,Middle East
+reu,2,Africa_Eastern
+rom,12,EU-12
+rou,12,EU-12
+rus,23,Russia
+rwa,2,Africa_Eastern
+sau,21,Middle East
+scg,15,Europe_Non_EU
+sdn,2,Africa_Eastern
+sen,5,Africa_Western
+sgp,29,Southeast Asia
+shn,13,EU-15
+sjm,16,European Free Trade Association
+slb,29,Southeast Asia
+sle,5,Africa_Western
+slv,9,Central America and Caribbean
+smr,13,EU-15
+som,2,Africa_Eastern
+spm,13,EU-15
+srb,15,Europe_Non_EU
+ssd,2,Africa_Eastern
+stp,5,Africa_Western
+sur,25,South America_Northern
+svk,12,EU-12
+svn,12,EU-12
+swe,13,EU-15
+swz,4,Africa_Southern
+syc,29,Southeast Asia
+syr,21,Middle East
+tca,13,EU-15
+tcd,5,Africa_Western
+tgo,5,Africa_Western
+tha,29,Southeast Asia
+tjk,10,Central Asia
+tkl,29,Southeast Asia
+tkm,10,Central Asia
+tls,29,Southeast Asia
+ton,29,Southeast Asia
+tto,9,Central America and Caribbean
+tun,3,Africa_Northern
+tur,15,Europe_Non_EU
+tuv,29,Southeast Asia
+twn,30,Taiwan
+tza,4,Africa_Southern
+uga,2,Africa_Eastern
+ukr,14,Europe_Eastern
+ury,26,South America_Southern
+usa,1,USA
+uzb,10,Central Asia
+vat,13,EU-15
+vct,9,Central America and Caribbean
+ven,25,South America_Northern
+vgb,13,EU-15
+vir,1,USA
+vnm,29,Southeast Asia
+vut,29,Southeast Asia
+wlf,13,EU-15
+wsm,29,Southeast Asia
+yem,21,Middle East
+yug,15,Europe_Non_EU
+zaf,24,South Africa
+zmb,4,Africa_Southern
+zwe,4,Africa_Southern

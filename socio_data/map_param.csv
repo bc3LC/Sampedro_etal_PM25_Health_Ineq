@@ -1,0 +1,162 @@
+scenario,subRegion,region,param,class,x,value,units
+scenario,Algeria,region,param,class,x,0.665885479,units
+scenario,Argentina,region,param,class,x,0.688569022,units
+scenario,Armenia,region,param,class,x,0.696004754,units
+scenario,Australia,region,param,class,x,0.803023117,units
+scenario,Austria,region,param,class,x,0.748509505,units
+scenario,Azerbaijan,region,param,class,x,0.682913383,units
+scenario,Bahamas,region,param,class,x,0.740617873,units
+scenario,Bahrain,region,param,class,x,0.69810628,units
+scenario,Bangladesh,region,param,class,x,0.522115959,units
+scenario,Belarus,region,param,class,x,0.68962897,units
+scenario,Belgium,region,param,class,x,0.770988344,units
+scenario,Belize,region,param,class,x,0.637605442,units
+scenario,Benin,region,param,class,x,0.445474158,units
+scenario,Bhutan,region,param,class,x,0.603142462,units
+scenario,Bolivia (Plurinational State of),region,param,class,x,0.610207818,units
+scenario,Bosnia and Herzegovina,region,param,class,x,0.709544484,units
+scenario,Botswana,region,param,class,x,0.645843637,units
+scenario,Brazil,region,param,class,x,0.634286319,units
+scenario,Bulgaria,region,param,class,x,0.699178672,units
+scenario,Burkina Faso,region,param,class,x,0.405646614,units
+scenario,Burundi,region,param,class,x,0.398011824,units
+scenario,Cameroon,region,param,class,x,0.532798062,units
+scenario,Canada,region,param,class,x,0.773978517,units
+scenario,Cape Verde,region,param,class,x,0.566693698,units
+scenario,Central African Republic,region,param,class,x,0.449624555,units
+scenario,Chad,region,param,class,x,0.425629029,units
+scenario,Chile,region,param,class,x,0.708477171,units
+scenario,China,region,param,class,x,0.680610904,units
+scenario,Colombia,region,param,class,x,0.638192979,units
+scenario,Comoros,region,param,class,x,0.524844576,units
+scenario,Congo,region,param,class,x,0.584560783,units
+scenario,Costa Rica,region,param,class,x,0.661034687,units
+scenario,Cote d'Ivoire,region,param,class,x,0.470110399,units
+scenario,Croatia,region,param,class,x,0.712157941,units
+scenario,Cuba,region,param,class,x,0.708729363,units
+scenario,Cyprus,region,param,class,x,0.765200466,units
+scenario,Czech Republic,region,param,class,x,0.741450227,units
+scenario,Democratic Republic of the Congo,region,param,class,x,0.520925134,units
+scenario,Denmark,region,param,class,x,0.760905847,units
+scenario,Dominican Republic,region,param,class,x,0.661655449,units
+scenario,Ecuador,region,param,class,x,0.660228274,units
+scenario,Egypt,region,param,class,x,0.649803337,units
+scenario,El Salvador,region,param,class,x,0.625805729,units
+scenario,Equatorial Guinea,region,param,class,x,0.591537547,units
+scenario,Estonia,region,param,class,x,0.724825037,units
+scenario,Ethiopia,region,param,class,x,0.434200215,units
+scenario,Fiji,region,param,class,x,0.677052253,units
+scenario,Finland,region,param,class,x,0.771151668,units
+scenario,France,region,param,class,x,0.774945064,units
+scenario,Gabon,region,param,class,x,0.6075717,units
+scenario,Gambia,region,param,class,x,0.498190767,units
+scenario,Georgia,region,param,class,x,0.711743355,units
+scenario,Germany,region,param,class,x,0.767788357,units
+scenario,Ghana,region,param,class,x,0.524459778,units
+scenario,Greece,region,param,class,x,0.761129897,units
+scenario,Guatemala,region,param,class,x,0.58695407,units
+scenario,Guinea,region,param,class,x,0.463421872,units
+scenario,Guinea-Bissau,region,param,class,x,0.44755951,units
+scenario,Guyana,region,param,class,x,0.602025961,units
+scenario,Haiti,region,param,class,x,0.531180102,units
+scenario,Honduras,region,param,class,x,0.557329339,units
+scenario,Hungary,region,param,class,x,0.720124161,units
+scenario,Iceland,region,param,class,x,0.805374331,units
+scenario,India,region,param,class,x,0.613848017,units
+scenario,Indonesia,region,param,class,x,0.646568068,units
+scenario,Iran (Islamic Republic of),region,param,class,x,0.672122082,units
+scenario,Iraq,region,param,class,x,0.644191438,units
+scenario,Ireland,region,param,class,x,0.781042668,units
+scenario,Israel,region,param,class,x,0.727076657,units
+scenario,Italy,region,param,class,x,0.782938329,units
+scenario,Jamaica,region,param,class,x,0.677354938,units
+scenario,Japan,region,param,class,x,0.785569305,units
+scenario,Jordan,region,param,class,x,0.658894587,units
+scenario,Kazakhstan,region,param,class,x,0.672752655,units
+scenario,Kenya,region,param,class,x,0.561562692,units
+scenario,Kuwait,region,param,class,x,0.665428226,units
+scenario,Kyrgyzstan,region,param,class,x,0.670028008,units
+scenario,Lao People's Democratic Republic,region,param,class,x,0.556072857,units
+scenario,Latvia,region,param,class,x,0.704764163,units
+scenario,Lebanon,region,param,class,x,0.697968994,units
+scenario,Lesotho,region,param,class,x,0.486690919,units
+scenario,Liberia,region,param,class,x,0.478821246,units
+scenario,Lithuania,region,param,class,x,0.722023424,units
+scenario,Luxembourg,region,param,class,x,0.824220278,units
+scenario,Madagascar,region,param,class,x,0.44912857,units
+scenario,Malawi,region,param,class,x,0.489097584,units
+scenario,Malaysia,region,param,class,x,0.710096104,units
+scenario,Maldives,region,param,class,x,0.613461018,units
+scenario,Mali,region,param,class,x,0.406304608,units
+scenario,Malta,region,param,class,x,0.752456564,units
+scenario,Mauritius,region,param,class,x,0.646785684,units
+scenario,Mexico,region,param,class,x,0.678106092,units
+scenario,Mongolia,region,param,class,x,0.634934674,units
+scenario,Morocco,region,param,class,x,0.596269203,units
+scenario,Mozambique,region,param,class,x,0.439329106,units
+scenario,Namibia,region,param,class,x,0.603224985,units
+scenario,Nepal,region,param,class,x,0.535043446,units
+scenario,Netherlands,region,param,class,x,0.779290723,units
+scenario,New Zealand,region,param,class,x,0.774653195,units
+scenario,Nicaragua,region,param,class,x,0.56383583,units
+scenario,Niger,region,param,class,x,0.382230446,units
+scenario,Nigeria,region,param,class,x,0.538439887,units
+scenario,Norway,region,param,class,x,0.799961378,units
+scenario,Oman,region,param,class,x,0.67761269,units
+scenario,Pakistan,region,param,class,x,0.53186501,units
+scenario,Panama,region,param,class,x,0.68594362,units
+scenario,Paraguay,region,param,class,x,0.613595873,units
+scenario,Peru,region,param,class,x,0.666449894,units
+scenario,Philippines,region,param,class,x,0.603046741,units
+scenario,Poland,region,param,class,x,0.746161947,units
+scenario,Portugal,region,param,class,x,0.726677861,units
+scenario,Puerto Rico,region,param,class,x,0.736401614,units
+scenario,Republic of Korea,region,param,class,x,0.750363309,units
+scenario,Republic of Moldova,region,param,class,x,0.670461407,units
+scenario,Romania,region,param,class,x,0.703906126,units
+scenario,Russian Federation,region,param,class,x,0.688393165,units
+scenario,Rwanda,region,param,class,x,0.454467402,units
+scenario,Saint Lucia,region,param,class,x,0.682987739,units
+scenario,Saint Vincent and the Grenadines,region,param,class,x,0.671920272,units
+scenario,Samoa,region,param,class,x,0.674717945,units
+scenario,Sao Tome and Principe,region,param,class,x,0.49241385,units
+scenario,Saudi Arabia,region,param,class,x,0.687167201,units
+scenario,Senegal,region,param,class,x,0.491863312,units
+scenario,Serbia,region,param,class,x,0.711907972,units
+scenario,Sierra Leone,region,param,class,x,0.435627091,units
+scenario,Singapore,region,param,class,x,0.765724097,units
+scenario,Slovakia,region,param,class,x,0.742128324,units
+scenario,Slovenia,region,param,class,x,0.734433663,units
+scenario,Solomon Islands,region,param,class,x,0.562622084,units
+scenario,Somalia,region,param,class,x,0.414449613,units
+scenario,South Africa,region,param,class,x,0.618877037,units
+scenario,Spain,region,param,class,x,0.766668015,units
+scenario,Sri Lanka,region,param,class,x,0.646755908,units
+scenario,Sudan,region,param,class,x,0.545976743,units
+scenario,Suriname,region,param,class,x,0.674311677,units
+scenario,Swaziland,region,param,class,x,0.576062717,units
+scenario,Sweden,region,param,class,x,0.781619139,units
+scenario,Switzerland,region,param,class,x,0.785301615,units
+scenario,Syrian Arab Republic,region,param,class,x,0.601968039,units
+scenario,Tajikistan,region,param,class,x,0.67461046,units
+scenario,Thailand,region,param,class,x,0.673815747,units
+scenario,The former Yugoslav Republic of Macedonia,region,param,class,x,0.699884541,units
+scenario,Timor-Leste,region,param,class,x,0.617937315,units
+scenario,Togo,region,param,class,x,0.426238117,units
+scenario,Tonga,region,param,class,x,0.676656877,units
+scenario,Trinidad and Tobago,region,param,class,x,0.686854822,units
+scenario,Tunisia,region,param,class,x,0.675940897,units
+scenario,Turkey,region,param,class,x,0.671762648,units
+scenario,Turkmenistan,region,param,class,x,0.668198251,units
+scenario,Uganda,region,param,class,x,0.493963303,units
+scenario,Ukraine,region,param,class,x,0.676194934,units
+scenario,United Kingdom of Great Britain and Northern Ireland,region,param,class,x,0.79018017,units
+scenario,United Republic of Tanzania,region,param,class,x,0.505775481,units
+scenario,United States of America,region,param,class,x,0.759852514,units
+scenario,Uruguay,region,param,class,x,0.673667708,units
+scenario,Vanuatu,region,param,class,x,0.628987668,units
+scenario,Venezuela (Bolivarian Republic of),region,param,class,x,0.676959107,units
+scenario,Viet Nam,region,param,class,x,0.635296014,units
+scenario,Yemen,region,param,class,x,0.525138311,units
+scenario,Zambia,region,param,class,x,0.5372283,units
+scenario,Zimbabwe,region,param,class,x,0.477001797,units
