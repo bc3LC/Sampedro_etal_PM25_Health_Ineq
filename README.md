@@ -1,4 +1,4 @@
-## Sampedro_etal_Ineq_NDC-LTT
+## Sampedro_etal_PM25_Health_Ineq
 
 **Evaluating inter- and intra-regional air pollution inequalities in a decarbonized world**
 
