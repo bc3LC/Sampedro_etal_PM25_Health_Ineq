@@ -922,7 +922,7 @@ ggplot(data = world) +
     legend.title = element_text(vjust = 1.5, hjust = .5),  # Adjust legend title spacing
     plot.title = element_text(hjust = 0.5, face = "bold", size = 14)  # Center and bold title
   ) +
-  labs(title = "Global Air Pollution and Human Development Index (HDI)",
+  labs(title = "",
        color = "HDI Score",
        size = "PM2.5 Level (ug/m3)")
 
@@ -968,7 +968,7 @@ ggplot(data = world) +
     legend.title = element_text(vjust = 1.5, hjust = .5),  # Adjust legend title spacing
     plot.title = element_text(hjust = 0.5, face = "bold", size = 14)  # Center and bold title
   ) +
-  labs(title = "Global Air Pollution and Sustainable Development Index (SDI)",
+  labs(title = "",
        color = "SDI Score",
        size = "PM2.5 Level (ug/m3)")
 
@@ -1059,6 +1059,8 @@ health_fin <- bind_rows(
 
 # check total: 
 all <- health_fin %>% group_by(scenario, year) %>% summarise(mort = sum(mort)) %>% ungroup()
+
+all_ctry_2050_central <- health_fin %>% group_by(scenario, subRegion, year) %>% summarise(mort = sum(mort)) %>% ungroup() %>% filter(year == 2050, scenario == "Central")
 
 # Divide health output in different dataframes with different details for producing alternative plots:
 
@@ -1199,33 +1201,40 @@ print(sum(is.infinite(health_clean$value)))  # Count of Inf values
 
 health_clean <- health_clean %>%
   mutate(value = ifelse(is.infinite(value), NA, value)) %>%
-  filter(!is.na(value))
+  filter(!is.na(value)) 
+
+health_clean_map <- health_clean %>%
+  filter(scenario != "Central") %>%
+  left_join(health_clean %>%
+              filter(scenario == "Central") %>%
+              rename(value_central = value),
+            by = c("iso", "subRegion", "unit")) %>%
+  mutate(diff = 100 * (value - value_central) / value_central) %>%
+  select(scenario = scenario.x, iso, subRegion, unit, value = diff)
 
 
 # Run the map function separately
 map_health_central_sce <- rmap::map(
-  data = health_clean,
+  data = health_clean_map,
   shape = rmap::mapCountries,
+  scaleRange = c(-100,100), 
   folder = paste0(getwd(), "/maps/health"),
-  scenRef = "Central",
-  scenDiff = c("Climate & Pollution", "Techno-Optimistic", "Sustainable"),
+  palette = rev(RColorBrewer::brewer.pal(6, "RdYlGn")),
+  legendBreaksn = 8,
   legendType = "pretty",
-  ncol = 3,
+  ncol = 1,
   save = FALSE,
-  background = TRUE,
-  title = "Differences in premature mortalities per 100K inhabitants"
-)
+  background = TRUE)
 
 
-map_health_central_sce_fin <-  map_health_central_sce$map_param_PRETTY_DiffPrcnt +
-  theme(plot.title = element_text(size = 12, hjust = .5, face ="bold"),
-        legend.position = "right",
+map_health_central_sce_fin <-  map_health_central_sce$map_param_PRETTY +
+  theme(legend.position = "right",
         legend.text = element_text(size = 11),
-        legend.title =  element_blank()) +
-  scale_fill_manual(values = c('#d9ef8b','#a6d96a','#66bd63','#1a9850','#006837','white','#f46d43','#d73027'))
+        legend.title =  element_blank()) 
 
 
-ggsave("maps/health/diffSce_2050_Abs.png", map_health_central_sce_fin, "png")
+
+ggsave("maps/health/diffSce_2050_Pct.png", map_health_central_sce_fin, "png")
 
 #------------------------
 #------------------------
@@ -1233,21 +1242,139 @@ ggsave("maps/health/diffSce_2050_Abs.png", map_health_central_sce_fin, "png")
 
 library(terra)
 
-# Load the raster
-r <- rast("./raster/2030_pm25_fin_weighted.tif")  # adjust the path if needed
+# Load the raster with PM25
+# pm25_gridded <- rast("./raster/pm25_gridded_central/raster_grid/2050_pm25_fin_weighted.tif")  
 
-# Check metadata
-r                   # basic info: dimensions, resolution, extent, CRS
-crs(r)              # coordinate reference system
-ext(r)              # spatial extent
-res(r)              # resolution
-nlyr(r)             # number of layers
-names(r)            # layer names
-minmax(r)           # min and max values
-summary(r)          # statistical summary of cell values
+# # Check metadata
+# r                   # basic info: dimensions, resolution, extent, CRS
+# crs(r)              # coordinate reference system
+# ext(r)              # spatial extent
+# res(r)              # resolution
+# nlyr(r)             # number of layers
+# names(r)            # layer names
+# minmax(r)           # min and max values
+# summary(r)          # statistical summary of cell values
+# 
+# # Quick visualization
+# plot(r, main = "2050 PM2.5 (weighted)")
 
-# Quick visualization
-plot(r, main = "2030 PM2.5 (weighted)")
 
+# Load rasters
+pm25_gridded <- rast("./raster/pm25_gridded_central/raster_grid/2050_pm25_fin_weighted.tif")  
+gdp_dec_gridded <- rast("./raster/GDPpc_fin_deciles_rast_SSP2_2050.tif") 
+
+# Get country boundaries
+countries <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+countries <- vect(countries)  # convert sf → terra vect
+
+# Check CRS
+crs(pm25_gridded)
+crs(countries)
+
+# Reproject countries if needed
+if (crs(pm25_gridded) != crs(countries)) {
+  countries <- project(countries, crs(pm25_gridded))
+}
+
+# -----------------------------
+# 2. Extract raster values by country
+# -----------------------------
+# Combine PM2.5 and GDP rasters into a single stack
+stacked <- c(pm25_gridded, gdp_dec_gridded)
+
+# Extract values for each country polygon
+# `ID` will be the row number from the countries vector
+vals <- terra::extract(stacked, countries, ID = TRUE)
+
+# 'vals$ID' corresponds to row number in 'countries'
+country_names <- as.data.frame(countries)$name  # use the 'name' column
+vals$country <- country_names[vals$ID]
+
+# -----------------------------
+# 3. Clean & summarize
+# -----------------------------
+# Rename columns for clarity
+colnames(vals) <- c("country_id", "pm25", "gdp_decile", "country")
+
+# Remove NA
+vals <- vals %>% filter(!is.na(pm25), !is.na(gdp_decile))
+
+# -----------------------------
+# 4. SUMMARY BY COUNTRY × DECILE
+# -----------------------------
+summary_by_country_decile <- vals %>%
+  filter(gdp_decile != 0) %>% # TO CHECK
+  group_by(country, gdp_decile) %>%
+  summarise(mean_pm25 = mean(pm25, na.rm = TRUE), .groups = "drop") 
+# -----------------------------
+# 5. SPEARMAN CORRELATION PER COUNTRY
+# -----------------------------
+top_polluted <- pm25 %>%
+  filter(scenario == "Central",
+         year == 2050,
+         value > 25) %>%
+  pull(subRegion)
+
+
+cor_results <- summary_by_country_decile %>%
+  group_by(country) %>%
+  summarise(rho = cor(gdp_decile, mean_pm25, method = "spearman"), .groups = "drop")
+
+summary(cor_results$rho)
+
+# -----------------------------
+# 6. DENSITY DISTRIBUTION OF PM2.5 BY DECILE
+# -----------------------------
+p_density <- ggplot(vals  %>%
+                      filter(gdp_decile != 0),
+                    aes(x = pm25, fill = factor(gdp_decile))) +
+  geom_density(alpha = 0.4) +
+  labs(
+    x = "PM2.5 concentration",
+    y = "Density",
+    fill = "GDP Decile",
+    title = "Distribution of PM2.5 by Income Decile (global)"
+  ) +
+  theme_minimal()
+
+ggsave("within_impact/pm25_density_by_decile.png", plot = p_density, width = 8, height = 5, dpi = 300)
+
+# -----------------------------
+# 7. HISTOGRAMS OF CORRELATIONS
+# -----------------------------
+# Spearman correlation
+p_corr_hist <- ggplot(cor_results, aes(x = rho)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+  labs(
+    x = "Spearman correlation (Decile vs PM2.5)",
+    y = "Number of countries",
+    title = "PM2.5–Income Gradient across Countries"
+  ) +
+  theme_minimal()
+
+ggsave("within_impact/pm25_spearman_hist.png", plot = p_corr_hist, width = 8, height = 5, dpi = 300)
+
+# -----------------------------
+# 8. MAP VISUALIZATION
+# -----------------------------
+countries_sf <- sf::st_as_sf(countries)
+
+# Merge correlation results for map
+map_rho <- countries_sf %>%
+  left_join(cor_results, by = c("name" = "country"))
+
+p_map_rho <- ggplot(map_rho) +
+  geom_sf(aes(fill = rho), color = "grey30", size = 0.1) +
+  scale_fill_gradient2(
+    low = "red", mid = "white", high = "blue", midpoint = 0,
+    name = "Spearman ρ\n(Decile vs PM2.5)"
+  ) +
+  labs(
+    title = "Income Gradient of PM2.5 Exposure by Country",
+    subtitle = "Negative values → poorer deciles face higher PM2.5"
+  ) +
+  theme_minimal()
+
+ggsave("within_impact/pm25_spearman_map.png", plot = p_map_rho, width = 10, height = 6, dpi = 300)
 
 
