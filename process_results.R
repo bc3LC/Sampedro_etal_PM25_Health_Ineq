@@ -531,7 +531,7 @@ map_2050_sce <- map_share_d10_sce$map_param_FIXED +
         strip.text.x = element_text(size = 11),
         plot.title = element_blank(),
         legend.position = "bottom",
-        legend.text = element_text(size = 10))
+        legend.text = element_text(size = 8))
 
 ggsave("maps/within/other/map_bysce_2050.png", map_2050_sce, "png")
 
@@ -1171,13 +1171,13 @@ map_health_central_age <- rmap::map(data = health_sce_ctry_dis_age %>%
                                 ncol = 2,
                                 save = F,
                                 background  = T,
-                                title = "Share of people over 65 years, from premature deaths attributable to AAP" 
+                                title = "" 
 )
 
 map_health_central_age_fin <- map_health_central_age$map_param_FIXED +
   theme(plot.title = element_text(size = 12, hjust = .5, face ="bold"),
         legend.position = "bottom",
-        legend.text = element_text(size = 11),
+        legend.text = element_text(size = 10),
         legend.title =  element_blank()) +
   scale_fill_manual(values = c('#f7fbff','#deebf7','#c6dbef','#9ecae1','#6baed6','#4292c6','#2171b5','#084594'))
 
@@ -1263,6 +1263,27 @@ library(terra)
 pm25_gridded <- rast("./raster/pm25_gridded_central/raster_grid/2050_pm25_fin_weighted.tif")  
 gdp_dec_gridded <- rast("./raster/GDPpc_fin_deciles_rast_SSP2_2050.tif") 
 
+# Plot PM25
+# Convert raster to data frame
+# pm25_df <- as.data.frame(pm25_gridded, xy = TRUE)
+# colnames(pm25_df) <- c("x", "y", "PM25")
+# 
+# ggplot(pm25_df, aes(x = x, y = y, fill = PM25)) +
+#   geom_raster() +
+#   scale_fill_gradientn(
+#     colours = c("forestgreen", "yellow2", "firebrick2"),
+#     trans = scales::pseudo_log_trans(base = exp(1)), # safer than plain log
+#     name = "µg/m³"
+#   ) +
+#   labs(
+#     x = "Longitude",
+#     y = "Latitude"
+#   ) +
+#   theme_minimal() +
+#   coord_equal()
+# 
+# ggsave("within_impact/pm25_gridded_ssp2_2050.png", plot = last_plot(), width = 8, height = 5, dpi = 300)
+
 # Get country boundaries
 countries <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 countries <- vect(countries)  # convert sf → terra vect
@@ -1297,23 +1318,23 @@ vals$country <- country_names[vals$ID]
 colnames(vals) <- c("country_id", "pm25", "gdp_decile", "country")
 
 # Remove NA
-vals <- vals %>% filter(!is.na(pm25), !is.na(gdp_decile))
+vals <- vals %>% filter(!is.na(pm25), !is.na(gdp_decile)) %>%
+  filter(gdp_decile != 0)
 
 # -----------------------------
 # 4. SUMMARY BY COUNTRY × DECILE
 # -----------------------------
 summary_by_country_decile <- vals %>%
-  filter(gdp_decile != 0) %>% # TO CHECK
   group_by(country, gdp_decile) %>%
   summarise(mean_pm25 = mean(pm25, na.rm = TRUE), .groups = "drop") 
 # -----------------------------
 # 5. SPEARMAN CORRELATION PER COUNTRY
 # -----------------------------
-top_polluted <- pm25 %>%
-  filter(scenario == "Central",
-         year == 2050,
-         value > 25) %>%
-  pull(subRegion)
+# top_polluted <- pm25 %>%
+#   filter(scenario == "Central",
+#          year == 2050,
+#          value > 25) %>%
+#   pull(subRegion)
 
 
 cor_results <- summary_by_country_decile %>%
@@ -1367,14 +1388,117 @@ p_map_rho <- ggplot(map_rho) +
   geom_sf(aes(fill = rho), color = "grey30", size = 0.1) +
   scale_fill_gradient2(
     low = "red", mid = "white", high = "blue", midpoint = 0,
-    name = "Spearman ρ\n(Decile vs PM2.5)"
+    name = "Spearman ρ\n(Income-decile vs PM2.5)"
   ) +
   labs(
-    title = "Income Gradient of PM2.5 Exposure by Country",
-    subtitle = "Negative values → poorer deciles face higher PM2.5"
+    title = "",
+    subtitle = ""
   ) +
   theme_minimal()
 
 ggsave("within_impact/pm25_spearman_map.png", plot = p_map_rho, width = 10, height = 6, dpi = 300)
+
+# -----------------------------
+# 9. ADD JITTER-PLOTS
+# -----------------------------
+# Sample and reorder deciles
+vals_adj <- vals %>%
+  slice_sample(n = min(50000, nrow(vals))) %>%  # sample safely
+  filter(!is.na(pm25) & !is.na(gdp_decile)) %>%
+  mutate(
+    gdp_decile = paste0("d", as.numeric(gdp_decile)),  # convert numeric to "d1"-"d10"
+    gdp_decile = factor(gdp_decile,
+                        levels = paste0("d", 1:10),
+                        ordered = TRUE)
+  )
+
+# Mean per decile
+mean_points <- vals_adj %>%
+  group_by(gdp_decile) %>%
+  summarise(mean_pm = mean(pm25, na.rm = TRUE),
+            .groups = "drop")
+
+# Compute max density per decile to scale mean lines
+density_max <- vals_adj %>%
+  group_by(gdp_decile) %>%
+  summarise(max_y = max(density(pm25, n = 512)$y),
+            .groups = "drop")
+
+mean_points <- mean_points %>%
+  left_join(density_max, by = "gdp_decile")
+
+# Create a soft red-to-green palette for 10 deciles
+decile_colors <- scales::seq_gradient_pal("firebrick2", "forestgreen", "Lab")(seq(0, 1, length.out = 10))
+names(decile_colors) <- paste0("d", 1:10)
+
+
+# Define soft red-to-green palette for 10 deciles
+decile_colors <- scales::seq_gradient_pal("firebrick2", "forestgreen", "Lab")(seq(0, 1, length.out = 10))
+names(decile_colors) <- paste0("d", 1:10)
+
+# Spacing for jitter
+spacing_factor <- 0.02
+
+pl <- ggplot(vals_adj) +
+  geom_density(
+    aes(x = pm25, fill = gdp_decile, color = gdp_decile),
+    alpha = 0.1,
+    linewidth = 0.8
+  ) +
+  # Jitter points below the ridges
+  geom_jitter(
+    aes(
+      x = pm25,
+      y = -as.numeric(gdp_decile) * spacing_factor,
+      color = gdp_decile
+    ),
+    size = 0.5,
+    alpha = 0.3,
+    height = 0
+  ) +
+  # Boxplots in the jitter space
+  geom_boxplot(
+    aes(
+      x = pm25,
+      y = -as.numeric(gdp_decile) * spacing_factor,
+      group = gdp_decile,
+      color = gdp_decile
+    ),
+    width = 0.015,     # vertical thickness of boxplot
+    outlier.size = 0.5,
+    outlier.alpha = 0.3,
+    alpha = 0.6,
+    show.legend = F
+  ) +
+  # Apply soft red → green palette
+  scale_color_manual(values = decile_colors) +
+  scale_fill_manual(values = decile_colors) +
+  labs(
+    x = "PM2.5",
+    y = NULL,
+    title = "",
+    subtitle = "",
+    color = "",
+    fill = ""
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  expand_limits(y = -0.25)  # ensures negative jitter space is visible
+
+pl
+
+ggsave(
+  filename = "pm25_by_decile_ctry.png",
+  plot = pl,
+  width = 10,
+  height = 6,
+  dpi = 300,
+  bg = "white"
+)
 
 
