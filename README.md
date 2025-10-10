@@ -40,4 +40,6 @@ To reproduce the results and figures shown in Sampedro et al.,
 2. Install `R studio` from here - https://www.rstudio.com/
 3. Run the script called `process_results.R` chunk by chunk to generate the figures.  
 
-TBC
+## Acknowledgments
+<img src="./graphics-logo.png" alt="GRAPHICS logo" width="120" height="150" align="left"/>
+This project has received funding from the European Union’s Horizon research program under grant agreement 101060679 (GRAPHICS project)
