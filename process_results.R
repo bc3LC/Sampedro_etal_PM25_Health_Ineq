@@ -68,7 +68,10 @@ iso_region_rmap <- rmap::mapCountries %>%
 #------------------------
 # Color palettes
 pal_ineq_within <- c("grey90", "#4575b4",'#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026')
-pal_scen <- c("#F09415","#5AA6C0", "#C1B56B", "yellowgreen") 
+pal_scen <- c("Central" = "#F09415",
+              "Climate & Pollution" ="#5AA6C0",
+              "Sustainable" = "yellowgreen",
+              "Techno-Optimistic" = "#C1B56B") 
 pal_ghg_diff <- c('#1a9641','#a6d96a','#ffffbf','#fdae61','#d7191c')
 
 #------------------------
@@ -100,9 +103,20 @@ non_co2_global_hist <- non_co2_global %>%
 ggplot(non_co2_global %>%
          filter(year >= 2015), aes(x = year, y = value, color = factor(scenario, levels = c("Central", 
                                                                                     "Climate & Pollution",
-                                                                                    "Techno-Optimistic",
-                                                                                    "Sustainable")))) + 
-  geom_line(linewidth = 1.5) +
+                                                                                    "Sustainable",
+                                                                                    "Techno-Optimistic"
+                                                                                    )))) + 
+  geom_line(
+    data = non_co2_global %>%
+      filter(scenario != "Central"),
+    linewidth = 1.5
+  ) +
+  
+  geom_line(
+    data = non_co2_global %>%
+      filter(scenario == "Central"),
+    linewidth = 1.5
+  ) +
   geom_line(data = non_co2_global_hist, color = "black",linewidth = 1.5) +
   facet_wrap(~ghg, scales = "free") + 
   theme_classic() + 
@@ -114,7 +128,19 @@ ggplot(non_co2_global %>%
         legend.text = element_text(size = 11),
         axis.title = element_text(size = 13)) +
   scale_color_manual(values = pal_scen) +
-  geom_vline(xintercept = 2015, linetype = "dashed")
+  geom_vline(xintercept = 2015, linetype = "dashed")+
+  scale_color_manual(
+    values = pal_scen,
+    breaks = c(
+      "Central",
+      "Climate & Pollution",
+      "Sustainable",
+      "Techno-Optimistic"
+    )
+  )
+
+
+
 
 ggsave("figures/nonCO2_byScen.png", last_plot(), "png")
 
@@ -151,27 +177,28 @@ ggsave("maps/em/central_byGas_byYr_noCO.png", map_non_co2_central_yr, "png")
 
 # MAke an alternative map with percentage changes compared to 2015.
 non_co2_map_central_diff <- non_co2 %>%
-  filter(year %in% c(2015, 2020, 2030, 2040, 2050),
+  filter(year %in% c(2010, 2015, 2020, 2030, 2040, 2050),
          scenario == "Central") %>%
   rename(subRegion = region,
          yr = year) %>%
   pivot_wider(names_from = "yr",
               values_from = "value") %>%
-  mutate(diff_2020 = (`2020` - `2015`),
-         diff_2030 = (`2030` - `2015`),
-         diff_2040 = (`2040` - `2015`),
-         diff_2050 = (`2050` - `2015`)) %>%
+  mutate(
+    # diff_2020 = (`2020` - `2010`),
+    # diff_2030 = (`2030` - `2010`),
+    # diff_2040 = (`2040` - `2010`),
+    diff_2050 = (`2050` - `2010`)
+    ) %>%
   select(scenario, subRegion, ghg, starts_with("diff"), Units) %>%
   pivot_longer(cols = starts_with("diff"),
                names_to = "year") %>%
   mutate(year = gsub("diff_", "", year)) %>%
-  select(scenario, subRegion,ghg, yr = year, value, Units)
+  select(scenario, subRegion, ghg, yr = year, value, Units)
 
 map_non_co2_central_diff <- rmap::map(data = non_co2_map_central_diff %>% filter(ghg != "CO"),
                                  shape = rmap::mapGCAMReg32,
                                  folder = paste0(getwd(), "/maps"),
-                                 row = "ghg",
-                                 col = "yr",
+                                 class =  "ghg",
                                  palette = pal_ghg_diff,
                                  background  = T,
                                  save = F)
@@ -216,7 +243,7 @@ map_non_co2_diff <- rmap::map(data = non_co2_map_diff %>% filter(ghg != "CO"),
                          folder = paste0(getwd(), "/maps"),
                          col = "sce",
                          row = "ghg",
-                         legendFixedBreaks=c(-100, -75, -50, -25,  0, 25, 50, 75, 100, 600),
+                         legendFixedBreaks=c(-100, -75, -50, -25,  0, 25, 50, 75, 100, 150),
                          palette = c('#1a9850','#66bd63','#a6d96a','#d9ef8b','#ffffbf','#fee08b','#fdae61','#f46d43', '#d73027'),
                          background  = T,
                          save = F)
@@ -602,10 +629,10 @@ ggsave("maps/other/ghg.png", map_ghg, "png")
 # save_AggGrid = T)
 
 pm25 <- bind_rows(
-  read.csv("results/pm25_central.csv"),
-  read.csv("results/pm25_centralAP.csv"),
-  read.csv("results/pm25_to.csv"),
-  read.csv("results/pm25_sust.csv")
+  read.csv("results/pm25_central_new2.csv"),
+  read.csv("results/pm25_central_ap_new2.csv"),
+  read.csv("results/pm25_to_new2.csv"),
+  read.csv("results/pm25_sust_new2.csv")
 ) %>% # Add "sustainable"
   select(scenario, iso = region, year, value, units) %>%
   as_tibble() %>%
@@ -615,6 +642,19 @@ pm25 <- bind_rows(
   # Adjust South Sudan
   mutate(value = ifelse(iso == "SDS", value[iso == "SDN"], value)) %>%
   ungroup()
+
+# Variation in PM25 2010 - 2050
+pm25_diff_time_central <- pm25 %>%
+  filter(year %in% c(2010, 2050),
+         scenario == "Central") %>%
+  spread(year, value) %>%
+  mutate(diff = `2050` - `2010`,
+         diff_pct = diff / `2010`)
+
+# 2050 pm25 conc in 2050
+pm25_2050_central <- pm25 %>%
+  filter(year %in% c(2050),
+         scenario == "Central")
     
 
 #------
@@ -652,14 +692,14 @@ ggsave("figures/Gini_byScen_byYear.png", last_plot(), "png")
 # 1- PM2.5 concentration in the central scenario in 2050
 map_central_yr<- rmap::map(data = pm25 %>% 
                                filter(scenario == "Central",
-                                      year %in% c(2020, 2030, 2040, 2050),
+                                      year %in% c(2050),
                                       value != 0) %>%
-                               rename(class = year),
+                               select(-year),
                                shape = rmap::mapCountries,
                                folder = paste0(getwd(), "/maps/pm25_ctry"),
-                               legendFixedBreaks=c(0,5, 10, 20, 30, 40, 50, 60, 70),
+                               legendFixedBreaks=c(0,5, 10, 20, 30, 40, 50, 60, 70, 80, 100),
                                palette = c('white','#66bd63','#fee08b','#fdae61','#f46d43','#d73027', '#a50026', '#67001f'),
-                               ncol = 2,
+                               #ncol = 2,
                                legendType = "pretty",
                                background  = T,
                                save = F)
@@ -673,6 +713,90 @@ map_central_yr_fin <- map_central_yr$map_param_FIXED +
 
 ggsave("maps/pm25_ctry/central_yr.png", map_central_yr_fin, "png")
 
+# Add the 2010-2050 facet
+map_central_yr_si<- rmap::map(data = pm25 %>% 
+                             filter(scenario == "Central",
+                                    year %in% c(2010, 2050),
+                                    value != 0) %>%
+                             rename(class = year),
+                           shape = rmap::mapCountries,
+                           folder = paste0(getwd(), "/maps/pm25_ctry"),
+                           legendFixedBreaks=c(0,5, 10, 20, 30, 40, 50, 60, 70, 80, 100),
+                           palette = c('white','#66bd63','#fee08b','#fdae61','#f46d43','#d73027', '#a50026', '#67001f'),
+                           ncol = 2,
+                           legendType = "pretty",
+                           background  = T,
+                           save = F)
+
+map_central_yr_si_fin <- map_central_yr_si$map_param_FIXED +
+  theme(
+    plot.title = element_text(size = 14, hjust = .5, face = "bold"),
+    
+    legend.position = "bottom",
+    legend.text = element_text(size = 10),
+    legend.title = element_text(size = 11),
+    
+    # ⬛ square legend keys
+    legend.key.width  = unit(0.35, "cm"),
+    legend.key.height = unit(0.35, "cm"),
+    
+    # tighten spacing
+    legend.margin = margin(t = 2, b = 2),
+    legend.box.margin = margin(t = -4),
+    
+    plot.margin = margin(5, 5, 5, 5)
+  )
+
+ggsave("maps/pm25_ctry/central_yr_si.png", map_central_yr_si_fin, "png")
+
+# 1.5- PM2.5 concentration in the central scenario: 2050 - 2020 diff
+
+pm25_diff_time_central_adj <- pm25_diff_time_central %>%
+  select(scenario, iso, subRegion, value = diff_pct) %>%
+  mutate(units = "%",
+         value = value * 100)
+
+div_palette <- c(
+  "#006837", "#1a9850", "#66bd63", "#a6d96a",
+  "white",
+  "#fdae61", "#f46d43", "#d73027"
+)
+
+diff_breaks <- c(-75, -50, -30, -20, -10, 0, 10, 20, 30, 50, 75)
+
+map_pm25_diff_time_central <- rmap::map(
+  data = pm25_diff_time_central_adj,
+  shape = rmap::mapCountries,
+  folder = paste0(getwd(), "/maps/pm25_ctry"),
+  
+  legendFixedBreaks = diff_breaks,
+  palette = div_palette,
+  legendType = "pretty",
+  
+  ncol = 2,
+  background = TRUE,
+  save = FALSE
+)
+
+map_pm25_diff_time_central_fin <- map_pm25_diff_time_central$map_param_FIXED +
+  theme(
+    plot.title = element_text(size = 14, hjust = .5, face = "bold"),
+    
+    legend.position = "bottom",
+    legend.text = element_text(size = 10),
+    legend.title = element_text(size = 11),
+    
+    # square, compact legend keys
+    legend.key.width  = unit(0.35, "cm"),
+    legend.key.height = unit(0.35, "cm"),
+    
+    legend.margin = margin(t = 2, b = 2),
+    legend.box.margin = margin(t = -4),
+    
+    plot.margin = margin(5, 5, 5, 5)
+  )
+
+ggsave("maps/pm25_ctry/central_diffyr_si.png", map_pm25_diff_time_central_fin, "png")
 
 # # 2- PM2.5 concentration in the central scenario in 2010 and 2050
 # map_central_2010_2050<- rmap::map(data = pm25 %>% 
@@ -783,27 +907,38 @@ ggsave("maps/pm25_ctry/sce_yr.png", map_sce_yr_fin, "png")
 
 # 5- DiffPlots for PM2.5 concentrations by scenario in 2050
 
-map_sce_yr_diff_abs <- rmap::map(data = pm25 %>% 
-                            filter(year %in% c(2050),
-                                   value != 0),
-                          shape = rmap::mapCountries,
-                          folder = paste0(getwd(), "/maps/pm25_ctry/pm25_sce"),
-                          legendFixedBreaks=c(-50, -20, -10, -5, 0, 5, 10, 20, 30, 75),
-                          palette = c('white','#66bd63','#fee08b','#fdae61','#f46d43','#d73027', '#a50026', '#67001f'),
-                          legendType = "pretty",
-                          scenRef = "Central",
-                          scenDiff = c("Climate & Pollution", "Techno-Optimistic", "Sustainable"), 
-                          ncol = 2,
-                          save = T,
-                          background  = T,
+map_sce_yr_diff_abs <- rmap::map(
+  data = pm25 %>% filter(year == 2050),
+  shape = rmap::mapCountries,
+  folder = paste0(getwd(), "/maps/pm25_ctry"),
+  legendFixedBreaks = c(-40, -30, -20, -10, -5, 0, 5, 10),
+  paletteDiff = c(
+    "#006837", "#1a9850", "#66bd63", "#a6d96a",
+    "white",
+    "#f46d43",'#cb181d'
+  ),
+  legendType = "fixed",
+  scenRef = "Central",
+  scenDiff = c("Climate & Pollution", "Techno-Optimistic", "Sustainable"),
+  ncol = 1,
+  save = FALSE,
+  background = TRUE
 )
 
-map_sce_2050_diff_abs_fin <- map_sce_2050_diff_abs$map_param_PRETTY_DiffAbs +
+map_sce_2050_diff_abs_fin <- map_sce_yr_diff_abs$map_param_FIXED_DiffAbs +
   theme(plot.title = element_text(size = 14, hjust = .5, face ="bold"),
-        legend.position = "bottom",
-        legend.text = element_text(size = 11),
-        legend.title =  element_blank()) + 
-  scale_fill_manual(values = c( '#a6d96a','#66bd63', '#1a9850','#d9ef8b',"white" ,'#fdae61','#f46d43'))
+        legend.position = "right",
+        legend.text = element_text(size = 8),
+        strip.text = element_text(size = 11)) +
+  facet_wrap(~ scenario, 
+             ncol = 1,
+             labeller = labeller(
+               scenario = c(
+                 "Climate & Pollution_DiffAbs_Central" = "Climate & Pollution",
+                 "Techno-Optimistic_DiffAbs_Central" = "Techno-Optimistic",
+                 "Sustainable_DiffAbs_Central" = "Sustainable"
+               )
+             )) 
 
 ggsave("maps/pm25_ctry/diffplot_sce_2050_abs.png", map_sce_2050_diff_abs_fin, "png")
 
@@ -1012,7 +1147,7 @@ pop_fin_allages <- pop_fin_str %>%
 GBD <- rfasst::raw.rr.gbd.param
 
 health <- pm25 %>%
-  filter(iso %in% unique(pop_ctry$region)) %>% # only regions from which we have population data
+  #filter(iso %!in% unique(pop_ctry$region)) %>% # only regions from which we have population data
   gcamdata::repeat_add_columns(tibble::tibble(disease = c('ihd','stroke'))) %>%
   gcamdata::repeat_add_columns(tibble::tibble(age = unique(rfasst::raw.rr.gbd.param$age))) %>%
   dplyr::filter(year != ">25") %>%
@@ -1025,7 +1160,7 @@ health <- pm25 %>%
   dplyr::filter(complete.cases(alpha)) %>%
   ungroup() %>%
   dplyr::rowwise() %>%
-  dplyr::mutate(GBD_rr = 1 + alpha * (1 - exp(-beta * max(0, value - zcf) ^ delta))) %>%
+  dplyr::mutate(GBD_rr = 1 + alpha * (1 - exp(-beta * pmax(0, value - zcf) ^ delta))) %>%
   dplyr::select(-alpha, -beta, -zcf, -delta) %>%
   gcamdata::left_join_error_no_match(m0_ctry, by = c("iso","year", "disease", "age"))
 
@@ -1034,7 +1169,8 @@ health.str <- health %>%
   dplyr::filter(disease %in% c("ihd", "stroke")) %>%
   dplyr::mutate(year = as.numeric(as.character(year))) %>%
   dplyr::filter(year >= 2010) %>%
-  gcamdata::left_join_error_no_match(pop_fin_str, by = c('iso', 'year', 'age')) %>% 
+  mutate(iso = gsub("ROU", "ROM", iso)) %>%
+  dplyr::left_join(pop_fin_str, by = c('iso', 'year', 'age')) %>% 
   dplyr::mutate(mort = (1 - 1/ GBD_rr) * rate * pop_1K / 100,
                 mort = round(mort, 0),
                 mort = dplyr::if_else(is.na(mort), 0, mort)) %>%
@@ -1260,7 +1396,7 @@ library(terra)
 
 
 # Load rasters
-pm25_gridded <- rast("./raster/pm25_gridded_central/raster_grid/2050_pm25_fin_weighted.tif")  
+pm25_gridded <- rast("./raster/pm25_gridded_central/raster_grid/Central_NDC-LTT_2050_pm25_fin_weighted.tif")  
 gdp_dec_gridded <- rast("./raster/GDPpc_fin_deciles_rast_SSP2_2050.tif") 
 
 # Plot PM25

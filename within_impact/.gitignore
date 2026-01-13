@@ -42,8 +42,9 @@ inst/doc
 # sys files
 .DS_Store
 
-# results files
-results_*.csv
-
-# old results files
+# old files
 no/*
+
+# png files
+*.png
+
