@@ -1215,13 +1215,14 @@ pop_ctry_agg <- pop_ctry %>%
 health.agg.glob <- health_fin %>%
   select(-pop_1K) %>%
   group_by(scenario, iso, subRegion, year) %>%
-  summarise(mort = sum(mort)) %>%
-  ungroup() %>%
-  gcamdata::left_join_error_no_match(pop_ctry_agg, by = c("iso", "year")) %>%
+  summarise(mort = sum(mort, na.rm = TRUE), .groups = "drop") %>%
+  left_join(pop_ctry_agg, by = c("iso", "year")) %>%
   group_by(scenario, year) %>%
-  summarise(mort = sum(mort),
-            value = sum(value)) %>%
-  ungroup() %>%
+  summarise(
+    mort  = sum(mort, na.rm = TRUE),
+    value = sum(value, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
   mutate(mort_per100K = mort / value) %>%
   select(-value)
   
@@ -1229,9 +1230,9 @@ health.agg.glob <- health_fin %>%
 health.agg <- health_fin %>%
   select(-pop_1K) %>%
   group_by(scenario, iso, subRegion, year) %>%
-  summarise(mort = sum(mort)) %>%
+  summarise(mort = sum(mort, na.rm = TRUE)) %>%
   ungroup() %>%
-  gcamdata::left_join_error_no_match(pop_ctry_agg, by = c("iso", "year")) %>%
+  left_join(pop_ctry_agg, by = c("iso", "year")) %>%
   mutate(mort_per100K = mort / value) %>%
   select(-value, -unit) %>%
   mutate(unit = "Prem deaths / 100K")
@@ -1240,29 +1241,26 @@ map_health_central <- rmap::map(data = health.agg %>%
                                   rename(value = mort_per100K,
                                          yr = year) %>%
                                   filter(scenario == "Central",
-                                         yr %in% c(2050),
-                                         value != 0),
+                                         yr %in% c(2050)),
                                    shape = rmap::mapCountries,
                                    folder = paste0(getwd(), "/maps/health"),
-                                   #legendFixedBreaks=c(-20, -10, 0, 10, 20, 30),
                                    palette = "YlOrRd",
                                    legendType = "pretty",
-                                   #col = "yr",
                                    ncol = 1,
                                    save = F,
                                    background  = T,
-                                   #title = "Premature mortalities per 100K inhabitants" 
+                                   showNA = T, 
+                                colorNA = "grey90"
 )
 
 map_health_central_fin <- map_health_central$map_param_PRETTY +
-  scale_fill_brewer(palette = "YlOrRd", name = "Premature deaths per 100K") +
+  guides(fill = guide_legend(title = "Premature deaths per 100K")) +
   theme(
     plot.title = element_text(size = 14, hjust = 0.5, vjust = 0.5, face = "bold"),
     legend.position = "bottom",
     legend.text = element_text(size = 10),
-    legend.title = element_text(size = 10),
-    #legend.key.width = unit(2, "cm")  # Helps prevent wrapping
-  ) 
+    legend.title = element_text(size = 10)
+  )
 
 
 ggsave("maps/health/central_2050_nromalized.png", map_health_central_fin, "png")
@@ -1327,17 +1325,13 @@ ggsave("maps/health/central_age_share65.png", map_health_central_age_fin, "png")
 # Clean the data: Remove NA and infinite values
 health_clean <- health.agg %>%
   rename(value = mort_per100K, yr = year) %>%
-  filter(yr == 2050, !is.na(value), is.finite(value)) %>% 
+  filter(yr == 2050) %>% 
   select(-mort, -yr) %>%
   distinct()
 
-# Check for remaining problematic values
-print(sum(is.na(health_clean$value)))   # Count of NA values
-print(sum(is.infinite(health_clean$value)))  # Count of Inf values
-
-health_clean <- health_clean %>%
-  mutate(value = ifelse(is.infinite(value), NA, value)) %>%
-  filter(!is.na(value)) 
+# # Check for remaining problematic values
+# print(sum(is.na(health_clean$value)))   # Count of NA values
+# print(sum(is.infinite(health_clean$value)))  # Count of Inf values
 
 health_clean_map <- health_clean %>%
   filter(scenario != "Central") %>%
@@ -1346,7 +1340,10 @@ health_clean_map <- health_clean %>%
               rename(value_central = value),
             by = c("iso", "subRegion", "unit")) %>%
   mutate(diff = 100 * (value - value_central) / value_central) %>%
-  select(scenario = scenario.x, iso, subRegion, unit, value = diff)
+  select(scenario = scenario.x, iso, subRegion, unit, value = diff) %>%
+  mutate(value = ifelse(is.infinite(value), 0, value),
+         value = ifelse(is.nan(value), 0, value),
+         unit = "%") 
 
 
 # Run the map function separately
@@ -1363,10 +1360,16 @@ map_health_central_sce <- rmap::map(
   background = TRUE)
 
 
-map_health_central_sce_fin <-  map_health_central_sce$map_param_PRETTY +
-  theme(legend.position = "right",
-        legend.text = element_text(size = 11),
-        legend.title =  element_blank()) 
+map_health_central_sce_fin <- map_health_central_sce$map_param_PRETTY +
+  theme(
+    legend.position = "right",
+    #legend.title = element_blank(),
+    legend.text = element_text(size = 10),
+    legend.key.width  = unit(0.4, "cm"),
+    legend.key.height = unit(0.4, "cm"),   # ← keeps boxes square
+    legend.spacing.y  = unit(0.1, "cm"),
+    legend.margin = margin(0, 0, 0, 0)
+  )
 
 
 
@@ -1637,4 +1640,10 @@ ggsave(
   bg = "white"
 )
 
+
+# -----------------------------
+# ADD ML for CLUSTERING 
+# -----------------------------
+
+data <- summary_by_country_decile
 
