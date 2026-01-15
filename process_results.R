@@ -1648,8 +1648,7 @@ ggsave(
 source('ml_script.R')
 
 ml_data <- summary_by_country_decile
-ml_data <- readRDS('results/summary_by_country_decile.rds')
-
+# ml_data <- readRDS('results/summary_by_country_decile.rds')
 
 # preprocess data
 ml_data <- ml_data %>%
@@ -1658,5 +1657,63 @@ ml_data <- ml_data %>%
   tidyr::pivot_wider(names_from = 'gdp_decile', values_from = 'mean_pm25')
 
 # run ml script
-ml_do_all(ml_data, 8, fig_legend = "Deciles",
-          fig_ox_label = "PM2.5 concentration [ug/m3]")
+cluster_number <- 8
+
+ml_clustered_data <- ml_clustering(ml_data, cluster_number)
+
+
+# do barchar plot
+data_ml <- ml_clustered_data %>%
+  tidyr::pivot_longer(cols = 2:11, names_to = 'decile', values_to = 'value') %>%
+  dplyr::mutate(cluster = as.factor(cluster)) %>%
+  dplyr::arrange(cluster) %>%
+  dplyr::mutate(country = factor(country, levels = unique(country)))
+
+
+pl <- ggplot(data_ml,
+             aes(y = factor(country), x = value, color = factor(decile))) +
+  geom_point(size = 3, alpha = 0.7) +
+  scale_color_manual(
+    values = pal_deciles,
+    name = 'Deciles'
+  ) +
+  labs(x = 'PM2.5 concentration [ug/m3]', y = "") +
+  theme(axis.text = element_text(size = 12))
+ggsave(
+  file = file.path("figures",paste0("ml_barchar_cluster",cluster_number,"_ordered.png")),
+  height = 50, width = 20, units = "cm",
+  plot = pl
+)
+
+
+# do map plot
+world_cluster <- world %>%
+  dplyr::select(country = name, geometry) %>%
+  dplyr::left_join(
+    ml_clustered_data %>%
+      dplyr::select(country, cluster) %>%
+      dplyr::distinct() %>%
+      mutate(country = ifelse(country == 'United States of America', 'United States', country)),
+    by = "country"
+  )
+world_cluster <- sf::st_sf(world_cluster, geometry = world_cluster$geometry)
+
+pl <- ggplot(data = world_cluster) +
+  geom_sf(aes(fill = as.factor(cluster)), color = "black", size = 0.1) +
+  scale_fill_brewer(palette = "Set3", na.value = "grey90", name = 'Cluster') +
+  theme_void() +  # Clean background
+  theme(
+    plot.background = element_rect(fill = 'white'),
+    legend.position = "bottom",
+    legend.box = "horizontal",  # Stack legends vertically
+    legend.spacing = unit(1, "cm"),  # Increase vertical space between legends
+    legend.title = element_text(vjust = 1.5, hjust = .5),  # Adjust legend title spacing
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14)  # Center and bold title
+  ) +
+  labs(title = "")
+ggsave(
+  file = file.path("figures",paste0("ml_map_cluster",cluster_number,".png")),
+  height = 10, width = 20, units = "cm",
+  plot = pl
+)
+
