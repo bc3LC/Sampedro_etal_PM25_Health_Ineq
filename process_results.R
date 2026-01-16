@@ -1657,7 +1657,7 @@ ml_data <- ml_data %>%
   tidyr::pivot_wider(names_from = 'gdp_decile', values_from = 'mean_pm25')
 
 # run ml script
-cluster_number <- 8
+cluster_number <- 4
 
 ml_clustered_data <- ml_clustering(ml_data, cluster_number)
 
@@ -1687,6 +1687,8 @@ ggsave(
 
 
 # do map plot
+world <-rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+
 world_cluster <- world %>%
   dplyr::select(country = name, geometry) %>%
   dplyr::left_join(
