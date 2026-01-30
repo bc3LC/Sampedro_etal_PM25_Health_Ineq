@@ -1381,6 +1381,9 @@ ggsave("maps/health/diffSce_2050_Pct.png", map_health_central_sce_fin, "png")
 # Within-region impacts by income decile:
 
 library(terra)
+library(patchwork)
+library(scico)
+library(cowplot)
 
 # Load the raster with PM25
 # pm25_gridded <- rast("./raster/pm25_gridded_central/raster_grid/2050_pm25_fin_weighted.tif")
@@ -1467,6 +1470,14 @@ vals <- vals %>% filter(!is.na(pm25), !is.na(gdp_decile)) %>%
 summary_by_country_decile <- vals %>%
   group_by(country, gdp_decile) %>%
   summarise(mean_pm25 = mean(pm25, na.rm = TRUE), .groups = "drop")
+
+decile_ratio <- summary_by_country_decile %>%
+  filter(gdp_decile %in% c("1", "10")) %>%
+  pivot_wider(names_from = gdp_decile,
+              values_from = mean_pm25) %>%
+  mutate(d_ratio = `10` / `1`) %>%
+  select(country, d_ratio)
+
 # -----------------------------
 # 5. SPEARMAN CORRELATION PER COUNTRY
 # -----------------------------
@@ -1520,23 +1531,60 @@ ggsave("within_impact/pm25_spearman_hist.png", plot = p_corr_hist, width = 8, he
 # -----------------------------
 countries_sf <- sf::st_as_sf(countries)
 
-# Merge correlation results for map
 map_rho <- countries_sf %>%
   left_join(cor_results, by = c("name" = "country"))
 
-p_map_rho <- ggplot(map_rho) +
-  geom_sf(aes(fill = rho), color = "grey30", size = 0.1) +
-  scale_fill_gradient2(
-    low = "red", mid = "white", high = "blue", midpoint = 0,
-    name = "Spearman ρ\n(Income-decile vs PM2.5)"
-  ) +
-  labs(
-    title = "",
-    subtitle = ""
-  ) +
-  theme_minimal()
+map_dec <- countries_sf %>%
+  left_join(decile_ratio, by = c("name" = "country"))
 
-ggsave("within_impact/pm25_spearman_map.png", plot = p_map_rho, width = 10, height = 6, dpi = 300)
+p_map_rho <- ggplot(map_rho) +
+  geom_sf(aes(fill = rho), color = "grey50", size = 0.1) +
+  scale_fill_scico(
+    palette = "broc",
+    midpoint = 0,
+    name = "Spearman ρ\n(Income decile vs PM2.5)",
+    na.value = "grey90"
+  ) +
+  labs(title = "A") +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0),
+    legend.position = "bottom"
+  )
+
+p_map_dec <- ggplot(map_dec) +
+  geom_sf(aes(fill = d_ratio), color = "grey50", size = 0.1) +
+  scale_fill_scico(
+    palette = "broc",
+    midpoint = 1,
+    name = "PM2.5 exposure ratio\n(D10 / D1)",
+    na.value = "grey90"
+  ) +
+  labs(title = "B") +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0),
+    legend.position = "bottom"
+  )
+
+
+p_combined <- plot_grid(
+  p_map_rho, p_map_dec,
+  ncol = 2,
+  label_fontfamily = "Times New Roman",
+  label_fontface = "bold",
+  label_size = 12
+)
+
+ggsave(
+  "within_impact/pm25_maps_combined.png",
+  plot = p_combined,
+  width = 14,
+  height = 7,
+  dpi = 300
+)
+
+
 
 # -----------------------------
 # 9. ADD JITTER-PLOTS
@@ -1646,18 +1694,58 @@ ggsave(
 # ADD ML for CLUSTERING
 # -----------------------------
 source('ml_script.R')
+library(factoextra)
 
 ml_data <- summary_by_country_decile
 # ml_data <- readRDS('results/summary_by_country_decile.rds')
+
 
 # preprocess data
 ml_data <- ml_data %>%
   dplyr::mutate(gdp_decile = ifelse(gdp_decile == 10, 'D10', paste0('D0',gdp_decile))) %>%
   dplyr::arrange(gdp_decile, country) %>%
-  tidyr::pivot_wider(names_from = 'gdp_decile', values_from = 'mean_pm25')
+  tidyr::pivot_wider(names_from = 'gdp_decile', values_from = 'mean_pm25') %>%
+  dplyr::filter(complete.cases(.))
 
 # run ml script
-cluster_number <- 4
+# ---- Step 1: Prepare numeric data for clustering ----
+# Select only the decile columns (numeric)
+num_data <- ml_data %>% dplyr::select(starts_with("D"))
+
+# Optional: scale data so each decile is comparable
+num_data_scaled <- scale(num_data)
+
+# ---- Step 2: Elbow method ----
+elbow_plot <- fviz_nbclust(num_data_scaled, kmeans, method = "wss") +
+  labs(title = "Elbow method")
+
+# ---- Step 3: Silhouette method ----
+silhouette_plot <- fviz_nbclust(num_data_scaled, kmeans, method = "silhouette") +
+  labs(title = "Silhouette method")
+
+# ---- Step 4: Gap statistic ----
+set.seed(123)  # reproducible
+gap_plot <- fviz_nbclust(num_data_scaled, kmeans, method = "gap_stat", nstart = 25, nboot = 50) +
+  labs(title = "Gap statistic")
+
+# ---- Combine plots with cowplot ----
+combined_plot <- cowplot::plot_grid(
+  elbow_plot, silhouette_plot, gap_plot,
+  labels = c("A", "B", "C"),  # panel labels
+  ncol = 1,                   # stack vertically; use ncol=3 for horizontal
+  align = "v"
+)
+
+ggsave(
+  filename = "within_impacts/cluster_determination.png",
+  plot = combined_plot,
+  width = 8,       # width in inches
+  height = 12,     # height in inches
+  dpi = 300        # resolution
+)
+
+2# Define clusters
+cluster_number <- 3
 
 ml_clustered_data <- ml_clustering(ml_data, cluster_number)
 
@@ -1667,55 +1755,94 @@ data_ml <- ml_clustered_data %>%
   tidyr::pivot_longer(cols = 2:11, names_to = 'decile', values_to = 'value') %>%
   dplyr::mutate(cluster = as.factor(cluster)) %>%
   dplyr::arrange(cluster) %>%
-  dplyr::mutate(country = factor(country, levels = unique(country)))
+  dplyr::mutate(
+    iso = countrycode::countrycode(country, origin = "country.name", destination = "iso3c"),
+    country = factor(country, levels = rev(sort(unique(country))))
+  ) %>%
+  dplyr::left_join(pop_fin_allages %>% dplyr::filter(year == 2050) %>% dplyr::select(-year), by = "iso") %>%
+  dplyr::filter(complete.cases(.))
 
+ctry_to_filter_ml <- data_ml %>%
+  dplyr::select(-decile, -value) %>%
+  dplyr::distinct() %>%
+  dplyr::mutate(
+    pop_cutoff = stats::quantile(pop_1K, probs = 0.75, na.rm = TRUE),
+    flt = dplyr::if_else(pop_1K >= pop_cutoff, "large", "small")
+  ) %>%
+  dplyr::filter(flt == "large") %>%
+  dplyr::pull(country)
 
-pl <- ggplot(data_ml,
-             aes(y = factor(country), x = value, color = factor(decile))) +
+plot_data <- data_ml %>%
+  dplyr::filter(country %in% ctry_to_filter_ml) 
+
+pl <- ggplot(
+  plot_data,
+  aes(y = country, x = value, color = factor(decile))
+) +
   geom_point(size = 3, alpha = 0.7) +
-  scale_color_manual(
-    values = pal_deciles,
-    name = 'Deciles'
-  ) +
-  labs(x = 'PM2.5 concentration [ug/m3]', y = "") +
-  theme(axis.text = element_text(size = 12))
+  scale_color_manual(values = pal_deciles, name = "Deciles") +
+  labs(x = "PM2.5 concentration [ug/m3]", y = "") +
+  theme(
+    axis.text.y = element_text(size = 12),
+    axis.text.x = element_text(size = 12)
+  )
+
 ggsave(
-  file = file.path("figures",paste0("ml_barchar_cluster",cluster_number,"_ordered.png")),
+  file = file.path("figures", paste0("ml_barchar_cluster", cluster_number, "_ordered.png")),
   height = 50, width = 20, units = "cm",
   plot = pl
 )
 
 
 # do map plot
-world <-rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf") %>%
+  dplyr::select(country = name, geometry)
 
-world_cluster <- world %>%
-  dplyr::select(country = name, geometry) %>%
-  dplyr::left_join(
-    ml_clustered_data %>%
-      dplyr::select(country, cluster) %>%
-      dplyr::distinct() %>%
-      mutate(country = ifelse(country == 'United States of America', 'United States', country)),
-    by = "country"
-  )
-world_cluster <- sf::st_sf(world_cluster, geometry = world_cluster$geometry)
+# Function to generate map plot for a given number of clusters
+map_cluster_plot <- function(data, cluster_number) {
+  
+  clustered_data <- ml_clustering(data, cluster_number)
+  
+  world_cluster <- world %>%
+    left_join(
+      clustered_data %>%
+        select(country, cluster) %>%
+        distinct(),
+      by = "country"
+    ) %>%
+    sf::st_sf(geometry = .$geometry)
+  
+  ggplot(world_cluster) +
+    geom_sf(aes(fill = as.factor(cluster)), color = "black", size = 0.1) +
+    scale_fill_brewer(palette = "Set3", na.value = "grey90", name = 'Cluster') +
+    theme_void() +
+    theme(
+      #plot.background = element_rect(fill = 'white'),
+      legend.position = "bottom",
+      legend.box = "horizontal",
+      legend.spacing = unit(1, "cm"),
+      legend.title = element_text(vjust = 1.5, hjust = .5),
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+    ) 
+}
 
-pl <- ggplot(data = world_cluster) +
-  geom_sf(aes(fill = as.factor(cluster)), color = "black", size = 0.1) +
-  scale_fill_brewer(palette = "Set3", na.value = "grey90", name = 'Cluster') +
-  theme_void() +  # Clean background
-  theme(
-    plot.background = element_rect(fill = 'white'),
-    legend.position = "bottom",
-    legend.box = "horizontal",  # Stack legends vertically
-    legend.spacing = unit(1, "cm"),  # Increase vertical space between legends
-    legend.title = element_text(vjust = 1.5, hjust = .5),  # Adjust legend title spacing
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 14)  # Center and bold title
-  ) +
-  labs(title = "")
-ggsave(
-  file = file.path("figures",paste0("ml_map_cluster",cluster_number,".png")),
-  height = 10, width = 20, units = "cm",
-  plot = pl
+# Generate plots
+plot_2_clusters <- map_cluster_plot(ml_data, 2)
+plot_3_clusters <- map_cluster_plot(ml_data, 3)
+
+combined_map <- cowplot::plot_grid(
+  plot_2_clusters + theme(plot.margin = margin(5,5,5,5)),  # reduce extra margins
+  plot_3_clusters + theme(plot.margin = margin(5,5,5,5)),
+  label_size = 14,             # Adjust size
+  ncol = 2,
+  align = "hv",
+  rel_widths = c(1, 1),
+  scale = 0.95                 # Shrink slightly to bring labels closer
 )
 
+# Save the combined map
+ggsave(
+  filename = "figures/ml_map_2_vs_3_clusters.png",
+  plot = combined_map,
+  width = 20, height = 10, units = "cm", dpi = 300
+)
