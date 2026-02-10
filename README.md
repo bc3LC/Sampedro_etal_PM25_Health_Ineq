@@ -13,12 +13,12 @@ Jon Sampedro<sup>1,2,*</sup>, Clàudia Rodés-Bachs<sup>1</sup>,  Dirk-Jan Van d
 \* corresponding author:  jon.sampedro@bc3research.org
 
 ## Abstract
-TBA     
+Ambient PM2.5 exposure remains a major global health challenge. While pollution levels have declined in many developed economies, they have increased in developing regions, exacerbating inequalities across countries. Although within-country air pollution disparities have narrowed in some contexts, they remain significant. This study assesses how inequalities both across and within countries evolve under alternative decarbonization futures, co-designed with diverse stakeholders and aligned with current climate policy portfolios. Using an integrated framework that combines an enhanced integrated assessment model with air quality modelling, we find that even with full implementation of national climate commitments, substantial PM2.5-related health impacts persist, especially in developing regions, maintaining or worsening cross-country inequalities. We also observe persistent within-region disparities, with wealthier groups contributing disproportionately to emissions, while in some developing economies the lowest-income populations experience the highest exposure. These findings highlight the need for targeted policies that integrate climate action with air quality and equity objectives.    
 
 ## Code reference
-Available at Zenodo: ADD Zenodo Link
+The GCAM_GRAPHICS model used in this study is available at Zenodo: https://zenodo.org/records/16960260
 
-ADD Code Citation
+jonsampedro. (2025). GCAM-GRAPHICS-7.0.0 (GCAM-GRAPHICS-v7.0.0). Zenodo. https://doi.org/10.5281/zenodo.16960260
 
 
 ## Contributing modeling software
