@@ -2,13 +2,17 @@
 
 **Evaluating inter- and intra-regional air pollution inequalities in a decarbonized world**
 
-Jon Sampedro<sup>1,2,*</sup>, Clàudia Rodés-Bachs<sup>1</sup>,  Dirk-Jan Van de Ven<sup>1</sup>, Mikel Gonzalez-Eguino <sup>1,2,3</sup> 
+Jon Sampedro<sup>1,2,*</sup>, Clàudia Rodés-Bachs<sup>1</sup>,  Dirk-Jan Van de Ven<sup>1</sup>, Cathryn Tonne<sup>3</sup>, Claudio Belis<sup>4</sup>, Mikel Gonzalez-Eguino <sup>1,2,5</sup> 
 
 <sup>1 </sup> Basque Center for Climate Change, Leioa, Spain
 
 <sup>2 </sup> IKERBASQUE, Basque Foundation for Science, Plaza Euskadi 5, 48009 Bilbao, Spain
 
-<sup>3 </sup> Department of Economic Analysis, University of the Basque Country (UPV/EHU), Bilbao, Spain
+<sup>3 </sup> ISGlobal, Universitat Pompeu Fabra, CIBER Epidemiología y Salud Pública, Doctor Aiguader 88, 08003 Barcelona, Spain
+
+<sup>4 </sup> European Commission – Joint Research Centre, via Fermi 2749, 21027, Ispra, Italy
+
+<sup>5 </sup> Department of Economic Analysis, University of the Basque Country (UPV/EHU), Bilbao, Spain
 
 \* corresponding author:  jon.sampedro@bc3research.org
 
